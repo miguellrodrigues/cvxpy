@@ -390,10 +390,10 @@ class Slacks:
 
     @staticmethod
     def invert(solution, inv_data):
-        # if solution.status in s.SOLUTION_PRESENT:
-        prim_vars = solution.primal_vars
-        x = prim_vars[FREE]
-        del prim_vars[FREE]
-        prim_vars[inv_data['x_id']] = x
-        solution.opt_val += inv_data[s.OBJ_OFFSET]
+        if solution.status not in s.ERROR:
+            prim_vars = solution.primal_vars
+            x = prim_vars[FREE]
+            del prim_vars[FREE]
+            prim_vars[inv_data['x_id']] = x
+            solution.opt_val += inv_data[s.OBJ_OFFSET]
         return solution
