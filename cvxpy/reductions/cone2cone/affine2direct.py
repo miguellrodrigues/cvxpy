@@ -166,10 +166,10 @@ class Dualize:
         status = solution.status
         prob_attr = solution.attr
         primal_vars, dual_vars = None, None
-        if status in s.SOLUTION_PRESENT:
+        if status is not s.SOLVER_ERROR:
             opt_val = solution.opt_val + inv_data[s.OBJ_OFFSET]
             primal_vars = {inv_data['x_id']:
-                           solution.dual_vars[s.EQ_DUAL]}
+                               solution.dual_vars[s.EQ_DUAL]}
             dual_vars = dict()
             direct_prims = solution.primal_vars
             constr_map = inv_data['constr_map']
@@ -202,21 +202,10 @@ class Dualize:
                 dv = direct_prims[DUAL_POW3D][i:i + con.size]
                 dual_vars[con.id] = dv
                 i += con.size
-        elif status == s.INFEASIBLE:
-            status = s.UNBOUNDED
-            opt_val = -np.inf
-        elif status == s.INFEASIBLE_INACCURATE:
-            status = s.UNBOUNDED_INACCURATE
-            opt_val = -np.inf
-        elif status == s.UNBOUNDED:
-            status = s.INFEASIBLE
-            opt_val = np.inf
-        elif status == s.UNBOUNDED_INACCURATE:
-            status = s.INFEASIBLE_INACCURATE
-            opt_val = np.inf
         else:
             status = s.SOLVER_ERROR
-            opt_val = np.nan
+            opt_val = np.NaN
+        
         sol = Solution(status, opt_val, primal_vars, dual_vars, prob_attr)
         return sol
 
@@ -401,10 +390,10 @@ class Slacks:
 
     @staticmethod
     def invert(solution, inv_data):
-        if solution.status in s.SOLUTION_PRESENT:
-            prim_vars = solution.primal_vars
-            x = prim_vars[FREE]
-            del prim_vars[FREE]
-            prim_vars[inv_data['x_id']] = x
+        # if solution.status in s.SOLUTION_PRESENT:
+        prim_vars = solution.primal_vars
+        x = prim_vars[FREE]
+        del prim_vars[FREE]
+        prim_vars[inv_data['x_id']] = x
         solution.opt_val += inv_data[s.OBJ_OFFSET]
         return solution

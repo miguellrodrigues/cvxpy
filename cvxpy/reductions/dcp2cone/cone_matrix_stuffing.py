@@ -389,7 +389,7 @@ class ConeMatrixStuffing(MatrixStuffing):
             opt_val = -solution.opt_val
 
         primal_vars, dual_vars = {}, {}
-        if solution.status not in s.SOLUTION_PRESENT:
+        if solution.status in s.ERROR:
             return Solution(solution.status, opt_val, primal_vars, dual_vars,
                             solution.attr)
 
